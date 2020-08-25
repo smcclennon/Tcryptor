@@ -1,0 +1,6 @@
+config.cfg
+Shield.*
+.vscode
+__pycache__
+data
+old
