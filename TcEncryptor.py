@@ -10,23 +10,23 @@ import pyDes, codecs
 def toKey (string):
     b = string
     a = 0
-    print(f'initial {string.encode()}')
+    # debug print(f'initial {string.encode()}')
     if len(b.encode()) < 16:
         while len (b.encode()) < 16:
-            print(f'less than 16 initial: {b.encode()}')
+            # debug print(f'less than 16 initial: {b.encode()}')
             b += b [a]
             a += 1
         while len(b.encode()) > 16:
             b = b [:-1]
-        
+
         while len(b.encode()) < 16:
             b = (b.encode()+'x'.encode()).decode()
-        print(len(b.encode()))
+        # debug print(len(b.encode()))
     elif len(b.encode()) > 24:
         while len(b.encode()) > 24:
-            print(f'more than 24 initial: {b.encode()}')
+            # debug print(f'more than 24 initial: {b.encode()}')
             b = b [:-1]
-    print(f'absolute: {b}')
+    # debug print(f'absolute: {b}')
     return b.encode()
 
 class TcEncryptor():
