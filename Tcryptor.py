@@ -8,9 +8,23 @@ from telegram import ParseMode
 from telegram.utils.helpers import mention_html
 import sys, traceback
 from threading import Thread
+import urllib.request  # Check for internet connectivity
 
 
 os.system(f'title _ _  ---====  Tcryptor {ver}  ====---  _ _')
+
+while True:
+    try:
+        ACR_PING_CODE = urllib.request.urlopen("https://api.telegram.org").getcode()
+        if ACR_PING_CODE == 200:
+            logger.info('Telegram pinged successfully!')
+            break
+        else:
+            logger.warning('Telegram ping error code: '+str(ACR_PING_CODE)+', retrying in 20 seconds')
+            time.sleep(20)
+    except:
+        logger.warning('Unable to ping Telegram, retrying in 10 seconds')
+        time.sleep(10)
 
 
 
