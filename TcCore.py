@@ -2,9 +2,9 @@ import requests, json, time, os
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler, MessageQueue
 import telegram
 ver='0.3.7.2.6'
-botName=f'Tcryptor'
+botName = 'Tcryptor'
 botVer=f'{botName} {ver}'
-botAt=f'@TcryptorBot'
+botAt = '@TcryptorBot'
 botUsername='TcryptorBot'
 userdataDIR='data/userdata.json'
 
@@ -45,12 +45,19 @@ def logusr(update):
 
 # Send a message to the user
 def botsend(update, context, msg):
-    update.message.reply_text(str(msg)+f'\n\n<i>{botAt} <code>{ver}</code></i>', parse_mode=telegram.ParseMode.HTML)
+    update.message.reply_text(
+        f'{str(msg)}\n\n<i>{botAt} <code>{ver}</code></i>',
+        parse_mode=telegram.ParseMode.HTML,
+    )
 
 
 # Send a message to the user and log the message sent
 def logbotsend(update, context, msg):
-    update.message.reply_text(str(msg)+f'\n\n<i>{botAt} <code>{ver}</code></i>', parse_mode=telegram.ParseMode.HTML)
+    update.message.reply_text(
+        f'{str(msg)}\n\n<i>{botAt} <code>{ver}</code></i>',
+        parse_mode=telegram.ParseMode.HTML,
+    )
+
     logger.info(f'[@{botUsername}][{botName}][M:{update.effective_message.message_id}]: {msg}')
 
 
