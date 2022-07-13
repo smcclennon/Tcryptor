@@ -7,11 +7,11 @@ import pyDes, codecs
 
 #minimum = float("inf")
 #myArr = [16, 24]
-def toKey (string):
+def toKey(string):
     b = string
-    a = 0
     # debug print(f'initial {string.encode()}')
     if len(b.encode()) < 16:
+        a = 0
         while len (b.encode()) < 16:
             # debug print(f'less than 16 initial: {b.encode()}')
             b += b [a]
@@ -21,7 +21,7 @@ def toKey (string):
 
         while len(b.encode()) < 16:
             b = (b.encode()+'x'.encode()).decode()
-        # debug print(len(b.encode()))
+            # debug print(len(b.encode()))
     elif len(b.encode()) > 24:
         while len(b.encode()) > 24:
             # debug print(f'more than 24 initial: {b.encode()}')
@@ -30,30 +30,27 @@ def toKey (string):
     return b.encode()
 
 class TcEncryptor():
-    def encrypt(original_key, text):
+    def encrypt(self, text):
         logger.info('TcEncryptor: Encrypting message...')
-        key = toKey(original_key)
+        key = toKey(self)
         data = pyDes.triple_des(key, pyDes.CBC, "\0\0\0\0\0\0\0\0", pad=None, padmode=pyDes.PAD_PKCS5)
         encrypted = str(data.encrypt(text.encode()))[2:-1]
         key = key.decode()
         logger.info('TcEncryptor: Message encrypted!')
         decrypted = TcEncryptor.decrypt(key, encrypted)
         logger.info('TcEncryptor: Comparing decrypted message to the original...')
-        if decrypted == str(text):
-            success = True
-        else:
-            success = decrypted
+        success = True if decrypted == str(text) else decrypted
         return [key, encrypted, success]
 
-    def decrypt(original_key, original_text):
+    def decrypt(self, original_text):
         logger.debug('TcEncryptor: Decrypting message...')
-        key = toKey(original_key)
+        key = toKey(self)
         text = bytes(map(ord, original_text)).decode('unicode-escape').encode('ISO-8859-1')
         if len(text) % 8 != 0:
             return 'not_multiple'
         data = pyDes.triple_des(key, pyDes.CBC, "\0\0\0\0\0\0\0\0", pad=None, padmode=pyDes.PAD_PKCS5)
         decrypted = str(data.decrypt(text).decode())
-        if decrypted == '':
+        if not decrypted:
             return 'not_valid'
         logger.info('TcEncryptor: Message decrypted!')
         return decrypted
@@ -67,30 +64,28 @@ class TcEncryptor():
 
 
 class TcEncryptor_old():
-    def encrypt(key, string):
+    def encrypt(self, string):
         logger.info('TcEncryptor: Encrypting message...')
         #string = re.sub('[^a-zA-Z0-9 \n\.]', '', message)
         #string = string.replace('  ', ' ')
         #string = string.replace('  ', ' ')
         encoded_chars = []
         for i in range(len(string)):
-            key_c = key[i % len(key)]
+            key_c = self[i % len(self)]
             encoded_c = chr(ord(string[i]) + ord(key_c) % 256)
             encoded_chars.append(encoded_c)
-        encoded_string = ''.join(encoded_chars)
         logger.info('TcEncryptor: Message encrypted!')
-        return encoded_string
+        return ''.join(encoded_chars)
 
-    def decrypt(key, string):
+    def decrypt(self, string):
         logger.debug('TcEncryptor: Decrypting message...')
         encoded_chars = []
         for i in range(len(string)):
-            key_c = key[i % len(key)]
+            key_c = self[i % len(self)]
             encoded_c = chr((ord(string[i]) - ord(key_c) + 256) % 256)
             encoded_chars.append(encoded_c)
-        encoded_string = ''.join(encoded_chars)
         logger.info('TcEncryptor: Message decrypted!')
-        return encoded_string
+        return ''.join(encoded_chars)
 
 
 logger.info('Loaded: TcEncryptor')

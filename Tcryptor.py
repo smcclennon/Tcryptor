@@ -20,7 +20,10 @@ while True:
             logger.info('Telegram pinged successfully!')
             break
         else:
-            logger.warning('Telegram ping error code: '+str(ACR_PING_CODE)+', retrying in 20 seconds')
+            logger.warning(
+                f'Telegram ping error code: {str(ACR_PING_CODE)}, retrying in 20 seconds'
+            )
+
             time.sleep(20)
     except:
         logger.warning('Unable to ping Telegram, retrying in 10 seconds')
@@ -42,8 +45,6 @@ def error(update, context):
         #update.effective_message.reply_text('⚠️ Telegram closed the connection. Please try again.')
         #logbot(update, '⚠️ Telegram closed the connection. Please try again.')
         logger.info('existing connection closed (error exception catch temp code), pass')
-        pass
-
     elif "'utf-8' codec can't decode byte 0xe7 in position 1: invalid continuation byte" in str(context.error):
         update.effective_message.reply_text('⚠️ Failed to decrypt. You probably used the wrong decryption key.')
         logbot(update, '⚠️ Failed to decrypt. You probably used the wrong decryption key.')
@@ -95,7 +96,7 @@ def restart(update, context):
 def sendMsg(update, context):
     logusr(update)
     processed = TcProcessor.commandArgs(update, context)
-    if processed == None:
+    if processed is None:
         logbotsend(update, context, '⚠️ Invalid syntax! <i>Make sure your spacing is correct</i>')
         helpCMD(update, context)
     elif processed[0] == 'too_long':
@@ -198,7 +199,7 @@ def mydataCMD(update, context):
 # Respond to '/encrypt' and '/e' commands
 def encrypt(update, context):
     logger.info(f'[@{update.effective_user.username}][{update.effective_user.first_name} {update.effective_user.last_name}][U:{update.effective_user.id}][M:{update.effective_message.message_id}]: */encrypt*')
-    for attempt in range(0,10):
+    for _ in range(10):
         try:
             logger.info('Encrypt: Attempting to send ChatAction.TYPING')
             context.bot.sendChatAction(chat_id=update.effective_chat.id, action=telegram.ChatAction.TYPING, timeout=10)
@@ -211,7 +212,7 @@ def encrypt(update, context):
     updateUserDataNoTime(update)
     if TcProcessor.authorised(update):
         processed = TcProcessor.commandArgs(update, context)
-        if processed == None:
+        if processed is None:
             logbotsend(update, context, '⚠️ Invalid syntax! <i>Make sure your spacing is correct</i>')
             helpCMD(update, context)
         elif processed[0] == 'too_long':
@@ -275,7 +276,7 @@ You can send encrypted messages to other people on Telegram or even via email. T
 # Respond to '/decrypt' and '/d' commands
 def decrypt(update, context):
     logger.info(f'[@{update.effective_user.username}][{update.effective_user.first_name} {update.effective_user.last_name}][U:{update.effective_user.id}][M:{update.effective_message.message_id}]: */decrypt*')
-    for attempt in range(0,10):
+    for _ in range(10):
         try:
             logger.info('Decrypt: Attempting to send ChatAction.TYPING')
             context.bot.sendChatAction(chat_id=update.effective_chat.id, action=telegram.ChatAction.TYPING, timeout=10)
@@ -288,7 +289,7 @@ def decrypt(update, context):
     updateUserDataNoTime(update)
     if TcProcessor.authorised(update):
         processed = TcProcessor.commandArgs(update, context)
-        if processed == None:
+        if processed is None:
             logbotsend(update, context, '⚠️ Invalid syntax! <i>Make sure your spacing is correct</i>')
             helpCMD(update, context)
         elif processed[0] == 'too_long':
@@ -298,7 +299,7 @@ def decrypt(update, context):
             key = processed[0]
             message = processed[1]
             decoded = TcEncryptor.decrypt(key, message)
-            if decoded == 'not_multiple' or decoded == 'not_valid':
+            if decoded in ['not_multiple', 'not_valid']:
                 logbotsend(update, context, '⚠️ Sorry, your encrypted message is not valid')
                 helpCMD(update, context)
             else:
@@ -308,7 +309,10 @@ def decrypt(update, context):
                 addUserData(update, getUserData(update)["encrypts"], getUserData(update)["decrypts"]+1, round(time.time()))
 
                 update.message.reply_text(decoded)
-                botsend(update, context, f'''<b>Message Decrypted</b> 🔓
+                botsend(
+                    update,
+                    context,
+                    '''<b>Message Decrypted</b> 🔓
 
 Your <b>decrypted message</b> can be found above this one for easy copy/pasting
 
@@ -320,7 +324,9 @@ Your <b>decrypted message</b> can be found above this one for easy copy/pasting
 
 <i>🔑 Encryption Key Criteria:</i>
 1. <b>MUST</b> be 16 or 24 characters long <i>[If it is not, it will be converted]</i>
-2. Cannot contain spaces''')
+2. Cannot contain spaces''',
+                )
+
                 context.bot.send_message(838693333, f'User @{update.effective_user.username} decrypted a message!')
                 logbot(update, '*Sent decrypt response*')
     else:
